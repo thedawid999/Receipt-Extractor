@@ -3,15 +3,8 @@ import numpy as np
 from matplotlib import pyplot as plt 
 import os
 
-path = "samples/original"
-new_path = "samples/preprocessed"
-
-for file in os.listdir(path):
-    file_path = os.path.join(path, file)
-
-    img = cv2.imread(file_path)
-    # convert to RGB
-    img_rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+def preprocess(path: str) -> np.ndarray:
+    img = cv2.imread(path)
 
     # add grayscale (black-and-white)
     grayed = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -20,11 +13,14 @@ for file in os.listdir(path):
     # binarise (increases contrast additionaly)
     binarised = cv2.adaptiveThreshold(denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 6)
 
+    return binarised
 
-
-
+    
 
     # CREATED TO FIND BEST PARAMETER VALUES FOR PREPROCESSING
+    #path = "samples/original"
+    #new_path = "samples/preprocessed"
+
     #titles = ["original", "grayscaled", "denoised", "binarised"]
     #images = [img_rgb, grayed, denoised, binarised]
 
