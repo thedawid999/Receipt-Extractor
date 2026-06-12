@@ -7,13 +7,13 @@ def preprocess(path: str) -> np.ndarray:
     img = cv2.imread(path)
 
     # add grayscale (black-and-white)
-    grayed = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #grayed = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     # remove noise
-    denoised = cv2.bilateralFilter(grayed, d=3, sigmaColor=40, sigmaSpace=40)
+    #denoised = cv2.bilateralFilter(grayed, d=3, sigmaColor=40, sigmaSpace=40)
     # binarise (increases contrast additionaly)
-    binarised = cv2.adaptiveThreshold(denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 6)
+    #binarised = cv2.adaptiveThreshold(denoised, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 3, 6)
 
-    return binarised
+    return img
 
     
 
