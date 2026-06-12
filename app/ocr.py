@@ -14,3 +14,4 @@ def detect_text(img: np.ndarray):
             "text": text,
             "conf": round(float(conf), 2)
         })
+    return output
