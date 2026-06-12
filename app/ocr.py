@@ -10,9 +10,7 @@ def detect_text(img: np.ndarray):
     output = []
     for bbox, text, conf in results:
         if conf > 0.4:
-            output.append({
-                "bbox": [[int(x), int(y)] for x, y in bbox],
-                "text": text,
-                "conf": round(float(conf), 2)
-            })
-    return output
+            output.append(text)
+
+    full_text = " ".join(output)
+    return full_text
