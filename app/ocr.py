@@ -2,12 +2,15 @@ import easyocr
 import numpy as np
 from preprocessing import preprocess
 
-img= preprocess("samples/original/receipt0.jpg")
 reader = easyocr.Reader(["en"])
 
-results = reader.readtext(img)
-text = " ".join([res[1] for res in results])
-print(text)
+def detect_text(img: np.ndarray):
+    results = reader.readtext(img)
 
-#def detect_text(image: np.ndarray):
-    
+    output = []
+    for bbox, text, conf in results:
+        output.append({
+            "bbox": [[int(x), int(y)] for x, y in bbox],
+            "text": text,
+            "conf": round(float(conf), 2)
+        })
