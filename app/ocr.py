@@ -11,6 +11,4 @@ def detect_text(img: np.ndarray):
     for bbox, text, conf in results:
         if conf > 0.4:
             output.append(text)
-
-    full_text = " ".join(output)
-    return full_text
+    return output
