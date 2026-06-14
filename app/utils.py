@@ -30,23 +30,30 @@ def group_lines(results: list[dict[object, str]], threshold=10):
         y = item["bbox"][0][1]
         x = item["bbox"][0][0]
 
+        # item_reduced in comparison to item saves only x and y coordinates, instead of all 4 corners of the text
+        item_reduced = {
+            "text": item["text"],
+            "x": x,
+            "y": y
+        }
+
         if last_y is None or abs(y - last_y) <= threshold:
             # current_line here contains a dict of bbox and text
-            current_line.append(item)
+            current_line.append(item_reduced)
         else:
             # sort also x-position
-            current_line = sorted(current_line, key=lambda i: i["bbox"][0][0])
+            current_line = sorted(current_line, key=lambda i: i["x"])
 
             # add the the whole line
             lines.append(current_line)
             # add the first item of a new line
-            current_line = [item]
+            current_line = [item_reduced]
 
         last_y = y
 
     # add the last line if it contains any words    
     if current_line:
-        current_line = sorted(current_line, key=lambda i: i["bbox"][0][0])
+        current_line = sorted(current_line, key=lambda i: i["x"])
         lines.append(current_line)
     
     return lines
