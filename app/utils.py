@@ -18,7 +18,7 @@ def save_upload(file: UploadFile, folder="uploads"):
     return str(file_path)
 
 # groups text fields with a height difference of 10 to one line string
-def group_lines(results: list[dict[str, object]], threshold=10):
+def group_lines(results: list[dict[object, str]], threshold=10):
     # sort y-position ascending
     results = sorted(results, key=lambda x: x["bbox"][0][1])
 
