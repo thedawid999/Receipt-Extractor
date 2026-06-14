@@ -31,15 +31,15 @@ def group_lines(results: list[dict[str, object]], threshold=10):
         x = item["bbox"][0][0]
 
         if last_y is None or abs(y - last_y) <= threshold:
-            # current_line here contains a dict of bbox, text and conf
+            # current_line here contains a dict of bbox and text
             current_line.append(item)
         else:
             # sort also x-position
             current_line = sorted(current_line, key=lambda i: i["bbox"][0][0])
 
-            # from that dict add only the text
-            lines.append(" ".join(i["text"] for i in current_line))
-            # add first word of a new line
+            # add the the whole line
+            lines.append(current_line)
+            # add the first item of a new line
             current_line = [item]
 
         last_y = y
@@ -47,7 +47,7 @@ def group_lines(results: list[dict[str, object]], threshold=10):
     # add the last line if it contains any words    
     if current_line:
         current_line = sorted(current_line, key=lambda i: i["bbox"][0][0])
-        lines.append(" ".join(i["text"] for i in current_line))
+        lines.append(current_line)
     
     return lines
 
