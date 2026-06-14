@@ -30,7 +30,7 @@ def convert_to_topleft_and_bottomright(bbox: list[list[float, float]]):
     return [x_min, y_min, x_max, y_max]
 
 # standardizes the bbox coordinates between 0-1000 for LayoutLMv3
-def standardize_bbox(bbox,)
+def standardize_bbox(bbox, height, width)
     x_min, y_min, x_max, y_max = bbox
 
     x_min_n = int((x_min / width) * 1000)
