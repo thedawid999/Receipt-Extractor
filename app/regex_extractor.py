@@ -1,7 +1,7 @@
 import re 
 from rapidfuzz import fuzz
 
-def extract_data(results: list[str]):
+def extract_data(results: list[list[dict[str, int, int]]]):
     #KEYWORDS = {
     #    "final_total": ["grand total", "total amount", "balance due", "total sales inclusive"],
     #    "subtotal": ["subtotal", "total sales exluding", "before tax", "net amount"],
@@ -20,7 +20,7 @@ def extract_data(results: list[str]):
     }
     final_list = []
 
-    for i, token in enumerate(results):
+    for token in results:
         best_category = None
         best_score = 0
 

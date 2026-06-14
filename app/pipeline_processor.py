@@ -1,4 +1,8 @@
 import os
+from preprocessing import preprocess
+from ocr import detect_text
+from regex_extractor import extract_data
+from utils import group_lines
 
 # used only for local main.py
 # check if path includes only one file or mutliple files
@@ -19,9 +23,15 @@ def process_input(path):
     else:
         raise ValueError("Input must be a directory or a file of type .jpg, .jpeg or .png")
 
-def process_receipt(path: str):
-    return None
-    # preprocess
-    # ocr 
-    # regex
-    # output
+
+path = "samples/original/receipt8.jpg"
+#def process_receipt(path: str):
+    #return None
+
+preprocessed = preprocess(path)
+detected = detect_text(preprocessed)
+lines = group_lines(detected)
+for i in lines:
+    print(f"{i}\n")
+#extract_data(lines)
+
