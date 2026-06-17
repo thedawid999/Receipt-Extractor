@@ -1,10 +1,6 @@
 from preprocessing import preprocess
-from ocr import detect_text
-from regex_extractor import extract_data
-from utils import to_json_labelstudio_format
 from pathlib import Path
-from PIL import Image
-import numpy as np
+
 
 # used only for local main.py
 # check if path includes only one file or mutliple files
@@ -28,25 +24,6 @@ def process_input(path):
     else:
         raise ValueError("Input must be a directory or a file of type .jpg, .jpeg or .png")
 
-
-# reads a whole folder of images and creates annotations
-def create_annotations_for_labelstudio(folder_path, output_json_path):
-    folder = Path(folder_path)
-
-    for img_path in sorted(folder.glob("*")):
-        if img_path.suffix.lower() not in {".jpg", ".jpeg", ".png"}:
-            continue
-        
-        print(f"[{img_path}] PROCESSING...")
-        
-        img = Image.open(img_path).convert("RGB")
-        img_np = np.array(img)
-        detections = detect_text(img_np)
-
-        to_json_labelstudio_format(img_path, output_json_path, detections)
-        print(f"[{img_path}] DONE...")
-
-create_annotations_for_labelstudio("layoutlm-model/train/images", "layoutlm-model/train/labels")
 
 #path = "samples/original/receipt8.jpg"
 #def process_receipt(path: str):
