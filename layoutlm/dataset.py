@@ -85,6 +85,50 @@ def assign_labels(bboxes: pd.DataFrame, entities: pd.DataFrame):
     bboxes["label"] = labels
     return bboxes
 
+# splits detected text in individual words (important for LayoutLM training)
+def split_words(dataframe: pd.DataFrame):
+    word_rows = []
+
+    for _, row in dataframe.iterrows():
+        text = str(row["text"])
+        words = text.split()
+
+        if not words:
+            continue
+
+        x0 = int(row["x0"])
+        y0 = int(row["y0"])
+        x2 = int(row["x2"])
+        y2 = int(row["y2"])
+
+        bbox_width = x2 - x0
+        total_chars = sum(len(word) for word in words)
+
+        word_x0 = x0
+
+        for i, word in enumerate(words):
+            word_width = round(bbox_width * (len(word) / total_chars))
+
+            # if its the last word, set its x2-coordinates to bbox-x2-coordinates
+            if i == len(words) - 1:
+                word_x2 = x2
+            else:
+                word_x2 = word_x0 + word_width
+
+            word_rows.append({
+                "filename": row["filename"],
+                "x0": word_x0,
+                "y0": y0,
+                "x2": word_x2,
+                "y2": y2,
+                "text": word,
+                "label": row["label"]
+            })
+
+            word_x0 = word_x2
+
+    return pd.DataFrame(word_rows)
+
 
 # JUST FOR TEST
 bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
@@ -92,6 +136,7 @@ bboxes = read_bboxes(bboxes_path)
 ent_path = sroie_path / "train/entities/" / "X51005663297.txt"
 entities = read_entities(ent_path)
 
-dataset = assign_labels(bboxes, entities)
-print(dataset)
+assigned = assign_labels(bboxes, entities)
+splitted = split_words(assigned)
+print(splitted)
 
