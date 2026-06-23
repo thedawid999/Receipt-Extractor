@@ -3,6 +3,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import json
+from tqdm import tqdm
+from PIL import Image
 
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
@@ -54,10 +56,11 @@ def assign_labels(bboxes: pd.DataFrame, entities: pd.DataFrame):
     labels = ["O"] * len(bboxes)
 
     row = entities.iloc[0]
-    company = row["company"]
-    address = row["address"]
-    date = row["date"]
-    total = row["total"]
+    # set to "" if does not exist in the entities.txt
+    company = row.get("company", "")
+    address = row.get("address", "")
+    date = row.get("date", "")
+    total = row.get("total", "")
 
     y_max = bboxes["y0"].iloc[-1]
     total_found = False
@@ -132,16 +135,48 @@ def split_words(dataframe: pd.DataFrame):
 
     return pd.DataFrame(word_rows)
 
+# combines all functions above and creates a dataset that is formatted for LayoutLM training
+def create_dataset(folder: Path):
+    bbox_folder = folder / "box"
+    entities_folder = folder / "entities"
+    img_folder = folder / "img"
 
+    bbox_files = sorted(bbox_folder.glob("*.txt"))
+    entity_files = sorted(entities_folder.glob("*.txt"))
+    img_files = sorted(img_folder.glob("*.jpg"))
+
+    data = []
+
+    for bbox_file, entity_file, img_file in tqdm(zip(bbox_files, entity_files, img_files)):
+
+        bbox = read_bboxes(bbox_file)
+        entities = read_entities(entity_file)
+        image = Image.open(img_file)
+
+        labeled = assign_labels(bbox, entities)
+        splitted = split_words(labeled)
+
+        width, height = image.size
+        data.append({
+            "df": splitted,
+            "width": width,
+            "height": height
+        })
+
+    return data
 
         
 
 # JUST FOR TEST
-bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
-bboxes = read_bboxes(bboxes_path)
-ent_path = sroie_path / "train/entities/" / "X51005663297.txt"
-entities = read_entities(ent_path)
+#bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
+#bboxes = read_bboxes(bboxes_path)
+#ent_path = sroie_path / "train/entities/" / "X51005663297.txt"
+#entities = read_entities(ent_path)
+#print(entities)
 
-assigned = assign_labels(bboxes, entities)
-print(assigned)
+#assigned = assign_labels(bboxes, entities)
+#print(assigned)
+
+train_ds = create_dataset(sroie_path_train)
+print(train_ds)
 
