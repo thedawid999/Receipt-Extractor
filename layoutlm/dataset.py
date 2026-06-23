@@ -11,6 +11,8 @@ pd.set_option("display.width", 2000)
 base = kagglehub.dataset_download("urbikn/sroie-datasetv2")
 base = Path(base)
 sroie_path = base / "SROIE2019"
+sroie_path_train = sroie_path / "train"
+sroie_path_test = sroie_path / "test"
 
 # reads box-file containing bbox coordinates and the word inside
 # leaves only top-left and bottom-right bbox coordinates
@@ -57,6 +59,7 @@ def assign_labels(bboxes: pd.DataFrame, entities: pd.DataFrame):
     date = row["date"]
     total = row["total"]
 
+    y_max = bboxes["y0"].iloc[-1]
     total_found = False
 
     for i, row in bboxes.iterrows():
@@ -66,13 +69,13 @@ def assign_labels(bboxes: pd.DataFrame, entities: pd.DataFrame):
         # 1. safe-check if ENTITY exists in entities
         # 2. real-check if line is a subset of ENTITY
 
-        # line length at least 3, because according to this logic individual words like "MARKET" that appear in the COMPANY, have been classified as COMPANY which is wrong
+        # company must be in the upper 30% of the document
         # "line in company" and not "company in line" because company is sometimes separeted into multiple lines
-        if company and (line in company) and len(line) > 2:
+        if company and (line in company) and (y0 < y_max*0.3):
             labels[i] = "COMPANY"
-        # line length at least 3, because according to this logic individual numbers like "1" that appear in the ADDRESS, have been classified as ADDRESS which is wrong
+        # address mus be in the upper 30% of the document
         # "line in address" and not "address in line" because address is mostly separeted into multiple lines
-        if address and (line in address) and len(line) > 2: 
+        if address and (line in address) and (y0 < y_max*0.3): 
             labels[i] = "ADDRESS"
         if date and (date in line):
             labels[i] = "DATE"
@@ -130,6 +133,9 @@ def split_words(dataframe: pd.DataFrame):
     return pd.DataFrame(word_rows)
 
 
+
+        
+
 # JUST FOR TEST
 bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
 bboxes = read_bboxes(bboxes_path)
@@ -137,6 +143,5 @@ ent_path = sroie_path / "train/entities/" / "X51005663297.txt"
 entities = read_entities(ent_path)
 
 assigned = assign_labels(bboxes, entities)
-splitted = split_words(assigned)
-print(splitted)
+print(assigned)
 
