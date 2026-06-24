@@ -135,6 +135,26 @@ def split_words(dataframe: pd.DataFrame):
 
     return pd.DataFrame(word_rows)
 
+# adds BIO-tag to previously assigned labels
+def add_bio_tags(df: pd.DataFrame):
+    bio_labels = []
+    prev_label = "O"
+
+    for i, row in df.iterrows():
+        current_label = row["label"]
+
+        if current_label == "O":
+            bio_labels.append("O")
+        elif current_label != prev_label:
+            bio_labels.append(f"B-{current_label}")
+        else:
+            bio_labels.append(f"I-{current_label}")
+        
+        prev_label = current_label
+
+    df["label"] = bio_labels
+    return df
+
 # combines all functions above and creates a dataset that is formatted for LayoutLM training
 def create_dataset(folder: Path):
     bbox_folder = folder / "box"
@@ -155,17 +175,16 @@ def create_dataset(folder: Path):
 
         labeled = assign_labels(bbox, entities)
         splitted = split_words(labeled)
+        tagged = add_bio_tags(splitted)
 
         width, height = image.size
         data.append({
-            "df": splitted,
+            "df": tagged,
             "width": width,
             "height": height
         })
 
     return data
-
-        
 
 # JUST FOR TEST
 #bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
@@ -178,5 +197,6 @@ def create_dataset(folder: Path):
 #print(assigned)
 
 train_ds = create_dataset(sroie_path_train)
+#test_ds = create_dataset(sroie_path_test)
 print(train_ds)
 
