@@ -225,7 +225,5 @@ def save_dataset():
 
     dataset_dict.save_to_disk("layoutlm/dataset")
 
-
-
 save_dataset()
 
