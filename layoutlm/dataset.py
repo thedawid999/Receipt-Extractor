@@ -161,6 +161,11 @@ def create_dataset(folder: Path):
     entities_folder = folder / "entities"
     img_folder = folder / "img"
 
+    # label mapping (see labels.txt)
+    labels = ['O', 'B-COMPANY', 'I-COMPANY', 'B-DATE', 'I-DATE', 
+              'B-ADDRESS', 'I-ADDRESS', 'B-TOTAL', 'I-TOTAL']
+    label2id = {label: i for i, label in enumerate(labels)}
+
     bbox_files = sorted(bbox_folder.glob("*.txt"))
     entity_files = sorted(entities_folder.glob("*.txt"))
     img_files = sorted(img_folder.glob("*.jpg"))
@@ -168,20 +173,36 @@ def create_dataset(folder: Path):
     data = []
 
     for bbox_file, entity_file, img_file in tqdm(zip(bbox_files, entity_files, img_files)):
-
+        # load data
         bbox = read_bboxes(bbox_file)
         entities = read_entities(entity_file)
         image = Image.open(img_file)
+        width, height = image.size
 
+        # process data
         labeled = assign_labels(bbox, entities)
         splitted = split_words(labeled)
         tagged = add_bio_tags(splitted)
 
-        width, height = image.size
+        # normalize bboxes (0-1000)
+        def normalize_bbox(row):
+            return [
+                int(1000 * row['x0'] / width),
+                int(1000 * row['y0'] / height),
+                int(1000 * row['x2'] / width),
+                int(1000 * row['y2'] / height)
+            ]
+        normalized_bboxes = [normalize_bbox(row) for _, row in tagged.iterrows()]
+        
+        # map labels with integers
+        ner_tags = [label2id.get(label, 0) for label in tagged['label']]
+
         data.append({
-            "df": tagged,
-            "width": width,
-            "height": height
+            "id": bbox_file.stem,
+            "tokens": tagged["text"].tolist(),
+            "bboxes": normalized_bboxes,
+            "ner_tags": ner_tags,
+            "image": str(img_file)
         })
 
     return data
