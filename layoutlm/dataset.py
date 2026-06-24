@@ -5,6 +5,7 @@ import pandas as pd
 import json
 from tqdm import tqdm
 from PIL import Image
+from datasets import Dataset, DatasetDict
 
 pd.set_option("display.max_rows", None)
 pd.set_option("display.max_columns", None)
@@ -207,17 +208,24 @@ def create_dataset(folder: Path):
 
     return data
 
-# JUST FOR TEST
-#bboxes_path = sroie_path / "train/box/" / "X51005663297.txt"
-#bboxes = read_bboxes(bboxes_path)
-#ent_path = sroie_path / "train/entities/" / "X51005663297.txt"
-#entities = read_entities(ent_path)
-#print(entities)
+# runs create_dataset for training and test data, and saves it to the disk
+def save_dataset():
+    train_ds = create_dataset(sroie_path_train)
+    test_ds = create_dataset(sroie_path_test)
 
-#assigned = assign_labels(bboxes, entities)
-#print(assigned)
+    # convert to hugging face Dataset
+    train_ds = Dataset.from_list(train_ds)
+    test_ds = Dataset.from_list(test_ds)
 
-train_ds = create_dataset(sroie_path_train)
-#test_ds = create_dataset(sroie_path_test)
-print(train_ds)
+    # merge both Datasets into one DatasetDict
+    dataset_dict = DatasetDict({
+        "train": train_ds,
+        "test": test_ds
+    })
+
+    dataset_dict.save_to_disk("layoutlm/dataset")
+
+
+
+save_dataset()
 
