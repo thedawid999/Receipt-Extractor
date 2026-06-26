@@ -1,9 +1,11 @@
 from transformers import AutoProcessor, LayoutLMv3ForTokenClassification, Trainer, TrainingArguments
+from transformers.data.data_collator import default_data_collator
 from datasets import Features, Sequence, ClassLabel, Value, Array2D, Array3D, load_from_disk
 from PIL import Image
 import numpy as np
 import evaluate
 import json
+import torch
 
 processor = AutoProcessor.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
 dataset_dict = load_from_disk("layoutlm/dataset")
@@ -89,3 +91,32 @@ def get_metrics(p):
         }
 
 model = LayoutLMv3ForTokenClassification.from_pretrained("microsoft/layoutlmv3-base", id2label=id2label, label2id=label2id)
+train_dataset = processed_dataset["train"]
+test_dataset = processed_dataset["test"]
+
+training_args = TrainingArguments(
+    output_dir="layoutlm/layoutlmv3-finetuned-sroie",
+    per_device_train_batch_size=4,
+    per_device_eval_batch_size=4,
+    gradient_accumulation_steps=2, # better for complex data
+    num_train_epochs=5,
+    learning_rate=1e-5,
+    weight_decay=0.01,              # prevents overfitting
+    eval_strategy="epoch",          # evaluate after each epoch instead after some steps
+    logging_steps=50,               # frequent logging for TensorBoard
+    load_best_model_at_end=True,
+    metric_for_best_model="f1"      # better metric for NER
+)   
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=test_dataset,
+    #tokenizer=processor,
+    data_collator=default_data_collator,
+    compute_metrics=get_metrics,
+)
+
+trainer.train()
+trainer.evaluate()
