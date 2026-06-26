@@ -106,7 +106,8 @@ training_args = TrainingArguments(
     save_strategy="epoch",
     logging_steps=10,               # frequent logging for TensorBoard
     load_best_model_at_end=True,
-    metric_for_best_model="f1"      # better metric for NER
+    metric_for_best_model="f1",     # better metric for NER
+    report_to="tensorboard"         # tp visualize metrics with TensorBoard
 )   
 
 trainer = Trainer(
