@@ -122,5 +122,5 @@ trainer = Trainer(
 trainer.train()
 trainer.evaluate()
 
-model.from_pretrained('./layoutlm/layoutlmv3-final-v1')
-processor.from_pretrained('./layoutlm/layoutlmv3-final-v1')
+trainer.model.save_pretrained('./layoutlm/layoutlmv3-final-v1')
+processor.save_pretrained('./layoutlm/layoutlmv3-final-v1')
