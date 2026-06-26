@@ -1,5 +1,6 @@
 from transformers import AutoProcessor
 from datasets import Features, Sequence, ClassLabel, Value, Array2D, Array3D, load_from_disk
+from PIL import Image
 
 processor = AutoProcessor.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
 dataset_dict = load_from_disk("layoutlm/dataset")
@@ -15,16 +16,11 @@ def prepare_examples(examples):
         boxes=examples['bboxes'], 
         word_labels=examples['ner_tags'], 
         padding="max_length", 
-        truncation=True
+        truncation=True,
+        return_tensors="np"
     )
-    return encoded
 
-# applies prepare_examples() one the whole DatasetDict
-processed_dataset = dataset_dict.map(
-    prepare_examples, 
-    batched=True, 
-    remove_columns=['tokens', 'bboxes', 'ner_tags', 'image', 'id']
-)
+    return encoded
 
 # structure to ensure the model gets the right data types
 features = Features({
@@ -34,4 +30,12 @@ features = Features({
     'bbox': Array2D(dtype="int64", shape=(512, 4)),
     'labels': Sequence(feature=Value(dtype='int64')),
 })
+
+# applies prepare_examples() one the whole DatasetDict
+processed_dataset = dataset_dict.map(
+    prepare_examples,
+    batched=True,
+    remove_columns=['id', 'tokens', 'bboxes', 'ner_tags', 'image'],
+    features=features,
+)
     
