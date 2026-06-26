@@ -99,11 +99,12 @@ training_args = TrainingArguments(
     per_device_train_batch_size=4,
     per_device_eval_batch_size=4,
     gradient_accumulation_steps=2, # better for complex data
-    num_train_epochs=5,
+    num_train_epochs=10,
     learning_rate=1e-5,
     weight_decay=0.01,              # prevents overfitting
     eval_strategy="epoch",          # evaluate after each epoch instead after some steps
-    logging_steps=50,               # frequent logging for TensorBoard
+    save_strategy="epoch",
+    logging_steps=10,               # frequent logging for TensorBoard
     load_best_model_at_end=True,
     metric_for_best_model="f1"      # better metric for NER
 )   
@@ -120,3 +121,6 @@ trainer = Trainer(
 
 trainer.train()
 trainer.evaluate()
+
+model.from_pretrained('./layoutlm/layoutlmv3-final-v1')
+processor.from_pretrained('./layoutlm/layoutlmv3-final-v1')
