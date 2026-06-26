@@ -1,9 +1,0 @@
-0: "O",
-1: "B-COMPANY",
-2: "I-COMPANY",
-3: "B-DATE",
-4: "I-DATE",
-5: "B-ADDRESS",
-6: "I-ADDRESS",
-7: "B-TOTAL",
-8: "I-TOTAL"
