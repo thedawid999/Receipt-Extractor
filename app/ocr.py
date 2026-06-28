@@ -18,7 +18,6 @@ def detect_text(img: np.ndarray):
                 {
                     "bbox": standardized,
                     "text": text,
-                    "class": "O"
                 }
             )
     return output
