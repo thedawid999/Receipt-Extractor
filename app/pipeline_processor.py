@@ -5,6 +5,7 @@ from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor
 from PIL import Image
 import torch
 import numpy as np
+from utils import merge_bio_tags
 
 model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
@@ -41,7 +42,6 @@ def predict(paths: list[Path]):
         preprocessed = preprocess(path)
         ocr_results = detect_text(preprocessed)
 
-
         text = [item['text'] for item in ocr_results]
         boxes = [item['bbox'] for item in ocr_results]
 
@@ -72,13 +72,17 @@ def predict(paths: list[Path]):
             if word_idx not in word_predictions:
                 word_predictions[word_idx] = predictions[token_idx]
 
-        # converting label_id into a string
+        # converting label_id into a string and merging BIO tags
+        words = []
+        labels = []
         print(f"============== Predictions for image: {path} ==============")
         for word_idx, label_id in word_predictions.items():
-            label = model.config.id2label[label_id]
+            words.append(text[word_idx])
+            labels.append(model.config.id2label[label_id])
 
-            if label != "O":
-                print(text[word_idx], "->", label)
+        entities = merge_bio_tags(words, labels)
+        return entities
+
 
 
 user_input = process_input("./samples/")
