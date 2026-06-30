@@ -5,7 +5,7 @@ from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor
 from PIL import Image
 import torch
 import numpy as np
-from utils import merge_bio_tags
+from utils import merge_bio_tags, extract_date
 
 model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
@@ -38,13 +38,14 @@ def process_input(path):
 # LayoutLM predicition
 def predict(paths: list[Path]):
     for path in paths:
-        img = Image.open(path)
-        preprocessed = preprocess(path)
-        ocr_results = detect_text(preprocessed)
+        img = Image.open(path) # loading the image
+        preprocessed = preprocess(path) # preprocessing the image
+        ocr_results = detect_text(preprocessed) # finding text
 
         text = [item['text'] for item in ocr_results]
         boxes = [item['bbox'] for item in ocr_results]
 
+        # setting up the processor
         encoding = processor(
             images=img,
             text=text,
@@ -72,7 +73,7 @@ def predict(paths: list[Path]):
             if word_idx not in word_predictions:
                 word_predictions[word_idx] = predictions[token_idx]
 
-        # converting label_id into a string and merging BIO tags
+        # converting label_id into a string
         words = []
         labels = []
         print(f"============== Predictions for image: {path} ==============")
@@ -80,9 +81,13 @@ def predict(paths: list[Path]):
             words.append(text[word_idx])
             labels.append(model.config.id2label[label_id])
 
+        # merging same bio tags
         entities = merge_bio_tags(words, labels)
-        return entities
+        
+        # extracting only DATE in following formats dd.mm.yyy OR dd/mm/yyyy
+        entities["DATE"] = extract_date(entities["DATE"])
 
+        return entities
 
 
 user_input = process_input("./samples/")
