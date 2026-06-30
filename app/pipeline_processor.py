@@ -12,27 +12,25 @@ model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
 processor = LayoutLMv3Processor.from_pretrained(model_path)
 
-# used only for local main.py
 # check if path includes only one file or mutliple files
-def process_input(path):
-    # if one file only
+# ALWAYS returns a list
+def resolve_image_paths(path):
     path = Path(path)
+
+    # if one file only
     if path.is_file():
         if path.suffix.lower() in {".jpg", ".jpeg", ".png"}:
-            return path
-        else:
-            raise ValueError("File must be of type .jpg, .jpeg or .png")
+            return [path]
+        raise ValueError("Unsupported file type")
+
     # if multiple files
-    elif path.is_dir():
-        results = []
-        # get a full path of each file
-        for file_path in path.iterdir():
-            # check if created path is a file and if it's an image
-            if file_path.is_file() and file_path.suffix.lower() in {".jpg", ".jpeg", ".png"}:
-                results.append(file_path)
-        return results
-    else:
-        raise ValueError("Input must be a directory or a file of type .jpg, .jpeg or .png")
+    if path.is_dir():
+        return [
+            f for f in path.iterdir()
+            if f.is_file() and f.suffix.lower() in {".jpg", ".jpeg", ".png"}
+        ]
+
+    raise ValueError("Input must be file or directory")
 
 # preprocess
 # OCR
@@ -99,8 +97,11 @@ def save_to_file(filename: str, results):
     with open(f"{filename}.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
 
-user_input = process_input("./samples/X51005301659.jpg")
-results = predict(user_input)
+user_input = resolve_image_paths("./samples/")
+results = []
+for path in user_input:
+    results.append(predict(path))
+
 save_to_file("outputs", results)
 
 
