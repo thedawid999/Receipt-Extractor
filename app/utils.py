@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile, File
 from pathlib import Path
 import shutil
+import re
 
 # saves upload image through API to get a PATH as a input for process_receipt()
 def save_upload(file: UploadFile, folder="uploads"):
@@ -38,3 +39,18 @@ def merge_bio_tags(words, labels):
             entities[entity][-1] += " " + word
 
     return entities
+
+# extract only DATE, because sometimes the model classifies "22/12/2017 14.03" as DATE
+def extract_date(text):
+    date_pattern = re.compile(r"\b\d{1,2}[./-]\d{1,2}[./-]\d{2,4}\b")
+    # return nothing if DATE not found
+    if not text:
+        return None
+
+    match = date_pattern.search(text)
+
+    if match:
+        return match.group()
+
+    return None
+            
