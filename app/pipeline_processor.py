@@ -6,6 +6,7 @@ from PIL import Image
 import torch
 import numpy as np
 from utils import merge_bio_tags, extract_date
+import json
 
 model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
@@ -21,9 +22,17 @@ def process_input(path):
             return path
         else:
             raise ValueError("File must be of type .jpg, .jpeg or .png")
-    # if path is a dir
+    # if multiple files
     elif path.is_dir():
-        ValueError("Input must be a directory or a file of type .jpg, .jpeg or .png")
+        results = []
+        # get a full path of each file
+        for file_path in path.iterdir():
+            # check if created path is a file and if it's an image
+            if file_path.is_file() and file_path.suffix.lower() in {".jpg", ".jpeg", ".png"}:
+                results.append(file_path)
+        return results
+    else:
+        raise ValueError("Input must be a directory or a file of type .jpg, .jpeg or .png")
 
 # preprocess
 # OCR
@@ -67,7 +76,7 @@ def predict(path):
     # converting label_id into a string
     words = []
     labels = []
-    print(f"============== Predictions for image: {path} ==============")
+    print(f"[.] Prediction for image: {path}")
     for word_idx, label_id in word_predictions.items():
         words.append(text[word_idx])
         labels.append(model.config.id2label[label_id])
@@ -79,11 +88,22 @@ def predict(path):
     if "DATE" in entities:
         entities["DATE"] = [extract_date(x) for x in entities["DATE"]]
 
-    return entities
+    print("[✔] Prediction completed")
+
+    return {
+        "image": str(path),
+        "entities": entities
+    }
+
+def save_to_file(filename: str, results):
+    with open(f"{filename}.json", "w", encoding="utf-8") as f:
+        json.dump(results, f, indent=4, ensure_ascii=False)
+
+user_input = process_input("./samples/X51005301659.jpg")
+results = predict(user_input)
+save_to_file("outputs", results)
 
 
-user_input = process_input("./samples/")
-predict(user_input)
 
 
 
