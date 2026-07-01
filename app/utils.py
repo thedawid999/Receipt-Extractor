@@ -108,3 +108,8 @@ def resolve_image_paths(path):
 def save_to_file(filename: str, results):
     with open(f"{filename}.json", "w", encoding="utf-8") as f:
         json.dump(results, f, indent=4, ensure_ascii=False)
+
+# loads config file for scheduler
+def load_config():
+    with open("config.json", "r", encoding="utf-8") as f:
+        return json.load(f)
