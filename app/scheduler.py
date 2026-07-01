@@ -2,6 +2,24 @@ from apscheduler.schedulers.blocking import BlockingScheduler
 from layoutlm import predict
 from utils import save_to_file, resolve_image_paths, load_config
 
+scheduler = BackgroundScheduler()
+
+def start_scheduler(config):
+    scheduler.add_job(
+        daily_job,
+        trigger="cron",
+        hour=config["schedule"]["hour"],
+        minute=config["schedule"]["minute"],
+        args=[config]
+    )
+
+    scheduler.start()
+    print(f"Scheduler started ({config['schedule']['hour']:02d}:{config['schedule']['minute']:02d})")
+
+
+def stop_scheduler():
+    scheduler.shutdown()
+
 # contains every step that will be done once the scheduler starts
 def daily_job():
     config = load_config()
@@ -18,5 +36,6 @@ def daily_job():
     output_dir.mkdir(exist_ok=True)
     save_to_file(output_dir / output_file, results)
     print("Daily job finished!")
+
 
 

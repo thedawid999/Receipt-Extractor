@@ -53,7 +53,7 @@ def predict(path):
     # converting label_id into a string
     words = []
     labels = []
-    print(f"[.] Prediction for image: {path}")
+    print(f"[.] Predicting image... | {path}")
     for word_idx, label_id in word_predictions.items():
         words.append(text[word_idx])
         labels.append(model.config.id2label[label_id])
