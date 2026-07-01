@@ -18,12 +18,8 @@ def start_scheduler(config):
     scheduler.start()
     print(f"Scheduler started ({config['schedule']['hour']:02d}:{config['schedule']['minute']:02d})")
     
-    try:
-        while True:
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Stopping scheduler...")
-        scheduler.shutdown()
+def stop_scheduler():
+    scheduler.shutdown()
 
 # contains every step that will be done once the scheduler starts
 def daily_job(config):
