@@ -1,12 +1,21 @@
 from utils import save_to_file, resolve_image_paths
 from layoutlm import predict
+from utils import load_config
+from scheduler import start_scheduler, daily_job
 
-paths = resolve_image_paths("./samples")
+config = load_config()
 
-results = []
+choice = input(
+"""
+1 - Process once
+2 - Start scheduler
+Choice:
+"""
+)
 
-for path in paths:
-    results.append(predict(path))
+if choice == "1":
+    daily_job(config)
+elif choice == "2":
+    start_scheduler(config)
 
-save_to_file("outputs", results)
 
