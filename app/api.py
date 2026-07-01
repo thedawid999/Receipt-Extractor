@@ -3,6 +3,8 @@ from .utils import load_config
 from .scheduler import start_scheduler, stop_scheduler, daily_job
 from pydantic import BaseModel
 
+app = FastAPI()
+
 # to make sure datatypes are correct
 class ScheduleRequest(BaseModel):
     input_dir: str
@@ -15,6 +17,10 @@ class SingleRequest(BaseModel):
     input_dir: str
     output_dir: str
     output_file: str = "results.json"
+
+@app.get("/")
+def root():
+    return {"status": "API running"}
 
 @app.post("/process")
 def process(req: SingleRequest):
