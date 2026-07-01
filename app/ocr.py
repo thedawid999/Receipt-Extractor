@@ -1,6 +1,6 @@
 import easyocr
 import numpy as np
-from utils import convert_to_topleft_and_bottomright, standardize_bbox
+from .utils import convert_to_topleft_and_bottomright, standardize_bbox
 
 reader = easyocr.Reader(["en"])
 

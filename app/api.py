@@ -1,20 +1,42 @@
-from fastapi import FastAPI, UploadFile, File
-from layoutlm import process_receipt
-from utils import save_upload
+from fastapi import FastAPI
+from .utils import load_config
+from .scheduler import start_scheduler, stop_scheduler, daily_job
+from pydantic import BaseModel
 
-# for one file only
-@app.post("/extract")
-async def extract(file: UploadFile = File(...)):
-    file_path = save_upload(file)
-    return process_receipt(file_path)
+# to make sure datatypes are correct
+class ScheduleRequest(BaseModel):
+    input_dir: str
+    output_dir: str
+    output_file: str = "results.json"
+    hour: int
+    minute: int
 
-# for multiple files
-@app.post("/extract-batch")
-async def extract_batch(files: List[UploadFile] = File(...)):
-    results = []
+class SingleRequest(BaseModel):
+    input_dir: str
+    output_dir: str
+    output_file: str = "results.json"
 
-    for file in files:
-        file_path = save_upload(file)
-        results.append(process_receipt(file_path))
-    
-    return results
+@app.post("/process")
+def process(req: SingleRequest):
+    config["input_dir"] = req.input_dir
+    config["output_dir"] = req.output_dir
+    config["output_file"] = req.output_file
+
+    return daily_job(config)
+
+@app.post("/scheduler/start")
+def start_schedule(req: ScheduleRequest):
+    config["schedule"]["hour"] = req.hour
+    config["schedule"]["minute"] = req.minute
+
+    start_scheduler(config)
+    return {"status": "scheduler started"}
+
+@app.post("/scheduler/stop")
+def stop_schedule():
+    stop_scheduler()
+    return {"status": "stopped"}
+
+@app.get("/config")
+def get_config():
+    return config

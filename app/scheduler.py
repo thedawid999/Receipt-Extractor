@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler
-from layoutlm import predict
-from utils import save_to_file, resolve_image_paths, load_config
+from .layoutlm import predict
+from .utils import save_to_file, resolve_image_paths, load_config
 from pathlib import Path
 import time
 

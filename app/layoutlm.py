@@ -1,11 +1,11 @@
-from preprocessing import preprocess
-from ocr import detect_text
+from .preprocessing import preprocess
+from .ocr import detect_text
 from pathlib import Path
 from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor
 from PIL import Image
 import torch
 import numpy as np
-from utils import merge_bio_tags, extract_date
+from .utils import merge_bio_tags, extract_date
 
 model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)

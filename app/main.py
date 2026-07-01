@@ -1,7 +1,7 @@
-from utils import save_to_file, resolve_image_paths
-from layoutlm import predict
-from utils import load_config
-from scheduler import start_scheduler, daily_job
+from .utils import save_to_file, resolve_image_paths
+from .layoutlm import predict
+from .utils import load_config
+from .scheduler import start_scheduler, daily_job
 
 config = load_config()
 
