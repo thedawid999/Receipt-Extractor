@@ -1,0 +1,9 @@
+{
+    "input_dir": "./samples",
+    "output_dir": "./outputs",
+    "output_file": "results.json",
+    "schedule": {
+        "hour": 2,
+        "minute": 0
+    }
+}
