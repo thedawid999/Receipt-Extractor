@@ -6,7 +6,6 @@ from PIL import Image
 import torch
 import numpy as np
 from utils import merge_bio_tags, extract_date
-import json
 
 model_path = "./layoutlm/layoutlmv3-final-v1/"
 model = LayoutLMv3ForTokenClassification.from_pretrained(model_path)
@@ -72,15 +71,6 @@ def predict(path):
         "image": str(path),
         "entities": entities
     }
-
-
-
-user_input = resolve_image_paths("./samples/")
-results = []
-for path in user_input:
-    results.append(predict(path))
-
-save_to_file("outputs", results)
 
 
 
