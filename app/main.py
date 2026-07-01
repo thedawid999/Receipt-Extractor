@@ -1,5 +1,5 @@
-from app.io import save_to_file, resolve_image_paths
-from pipeline_processor import predict
+from utils import save_to_file, resolve_image_paths
+from layoutlm import predict
 
 paths = resolve_image_paths("./samples")
 

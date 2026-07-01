@@ -1,5 +1,5 @@
 from fastapi import FastAPI, UploadFile, File
-from pipeline_processor import process_receipt
+from layoutlm import process_receipt
 from utils import save_upload
 
 # for one file only
