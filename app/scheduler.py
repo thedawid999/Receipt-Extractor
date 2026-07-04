@@ -3,6 +3,7 @@ from .layoutlm import predict
 from .utils import save_to_file, resolve_image_paths, load_config
 from pathlib import Path
 import os
+import time
 
 api_mode = os.getenv("API_MODE", "false").lower() == "true"
 scheduler = BackgroundScheduler()
