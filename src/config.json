@@ -3,7 +3,7 @@
     "output_dir": "./outputs",
     "output_file": "results",
     "schedule": {
-        "hour": 16,
-        "minute": 45
+        "hour": 9,
+        "minute": 20
     }
 }
