@@ -1,12 +1,18 @@
-from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.schedulers.background import BackgroundScheduler, BlockingScheduler
 from .layoutlm import predict
 from .utils import save_to_file, resolve_image_paths, load_config
 from pathlib import Path
-import time
+import os
 
-scheduler = BackgroundScheduler()
+api_mode = os.getenv("API_MODE", "false").lower() == "true"
+scheduler = None
 
 def start_scheduler(config):
+    if api_mode:
+        scheduler = BackgroundScheduler()
+    else:
+        scheduler = BlockingScheduler()
+
     scheduler.add_job(
         daily_job,
         trigger="cron",
@@ -15,8 +21,9 @@ def start_scheduler(config):
         args=[config]
     )
 
-    scheduler.start()
     print(f"Scheduler started ({config['schedule']['hour']:02d}:{config['schedule']['minute']:02d})")
+    scheduler.start()
+    
     
 def stop_scheduler():
     scheduler.shutdown()
