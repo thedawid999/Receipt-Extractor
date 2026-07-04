@@ -1,9 +1,9 @@
 {
-    "input_dir": "./input",
+    "input_dir": "./uploads",
     "output_dir": "./outputs",
     "output_file": "results",
     "schedule": {
         "hour": 9,
-        "minute": 20
+        "minute": 45
     }
 }

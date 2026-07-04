@@ -9,6 +9,9 @@ api_mode = os.getenv("API_MODE", "false").lower() == "true"
 scheduler = BackgroundScheduler()
 
 def start_scheduler(config):
+    if scheduler.running:
+        return
+
     if api_mode:
         start_scheduler_api(config)
     else:
