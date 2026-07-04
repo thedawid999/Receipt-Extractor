@@ -111,5 +111,5 @@ def save_to_file(filename: str, results):
 
 # loads config file for scheduler
 def load_config():
-    with open("app/config.json", "r", encoding="utf-8") as f:
+    with open("src/config.json", "r", encoding="utf-8") as f:
         return json.load(f)
