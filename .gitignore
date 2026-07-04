@@ -1,3 +1,9 @@
+# personal
+layoutlm/dataset/test/cache-b3cecb673d35f679.arrow
+layoutlm/dataset/train/cache-7de17ab0363d51cf.arrow
+layoutlm/layoutlmv3-finetuned-sroie/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 app/__pycache__/
