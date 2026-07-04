@@ -1,5 +1,5 @@
 {
-    "input_dir": "./samples",
+    "input_dir": "./input",
     "output_dir": "./outputs",
     "output_file": "results",
     "schedule": {
