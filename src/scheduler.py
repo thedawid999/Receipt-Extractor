@@ -7,7 +7,7 @@ import time
 
 api_mode = os.getenv("API_MODE", "false").lower() == "true"
 scheduler = BackgroundScheduler()
-
+ 
 def start_scheduler(config):
     if scheduler.running:
         return
