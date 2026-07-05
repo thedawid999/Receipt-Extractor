@@ -31,23 +31,6 @@ def convert_to_topleft_and_bottomright(bbox: list[list[float, float]]):
 
     return [x_min, y_min, x_max, y_max]
 
-# standardizes the bbox coordinates between 0-1000 for LayoutLMv3
-def standardize_bbox(bbox, height, width):
-    x_min, y_min, x_max, y_max = bbox
-
-    x_min_n = int((x_min / width) * 1000)
-    y_min_n = int((y_min / height) * 1000)
-    x_max_n = int((x_max / width) * 1000)
-    y_max_n = int((y_max / height) * 1000)   
-
-    # to make sure that the coordinates stay between 0-1000 (ocr can create false coordinates like -2 if near to the edge)
-    return [
-        min(max(x_min_n, 0), 1000),
-        min(max(y_min_n, 0), 1000),
-        min(max(x_max_n, 0), 1000),
-        min(max(y_max_n, 0), 1000)
-    ]
-
 # combines same entities into one (e.g. B-COMPANY and I-COMPANY)
 def merge_bio_tags(words, labels):
     entities = {}
