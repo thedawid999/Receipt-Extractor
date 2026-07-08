@@ -4,21 +4,6 @@ import shutil
 import re
 import json
 
-# saves upload image through API to get a PATH as a input for process_receipt()
-def save_upload(file: UploadFile, folder="uploads"):
-    path = Path(folder)
-    # create that folder if it does not exist
-    path.mkdir(exist_ok=True)
-
-    # concat folder-path and file to a full path
-    file_path = path / file.filename
-
-    # save the file
-    with open(file_path, "wb") as buffer:
-        shutil.copyfileobj(file.file, buffer)
-    
-    return str(file_path)
-
 # converts ocr-bbox-format [[x1,y1], [x2,y2], [x3,y3], [x4,y4]] to annotation-format [x_min, y_min, x_max, y_max]
 def convert_to_topleft_and_bottomright(bbox: list[list[float, float]]):
     x_coords = [i[0] for i in bbox]
