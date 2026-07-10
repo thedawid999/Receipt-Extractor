@@ -21,3 +21,4 @@ def detect_text(img: np.ndarray):
                 }
             )
     return output
+
